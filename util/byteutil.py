@@ -19,9 +19,9 @@ def hex_to_array(h):
 def int_to_array(i):
     return hex_to_array(int_to_hex(i))
 
-def print_bytearray(arr):
-    print ":".join(map(lambda x: "%X" % x, arr))
+def array_to_str(arr):
+    return ":".join(map(lambda x: "%02X" % x, arr))
 
 def calc_crc32(data):
     crc = zlib.crc32(data) & 0xFFFFFFFF
-    return "%08X" % crc
+    return "%08x" % crc

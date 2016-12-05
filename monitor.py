@@ -2,6 +2,7 @@
 __author__ = 'BetaS'
 
 import psutil
+import redis
 
 """
 GothamMonitor는 하드웨어 현황과 GOTHAM 서비스의 상태를 모니터링 하기 위한 프로세스
@@ -16,8 +17,10 @@ GothamMonitor는 하드웨어 현황과 GOTHAM 서비스의 상태를 모니터�
 
 class GothamMonitor:
     def __init__(self):
+        self.redis = redis.StrictRedis(host='localhost', port=6379, db=0)
         self.info = {"cpu": {}, "mem": {}, "dsk": {}}
         self.nodes = {}
+
         #self.monitoring = threading.Thread(target=NodeMoniter.monitor_task, args=[self])
         #self.monitoring.start()
 
@@ -29,6 +32,9 @@ class GothamMonitor:
             result = psutil.cpu_percent(1, True)
             self.info["cpu"]["load_per_cores"] = result
             self.info["cpu"]["load"] = reduce(lambda x, y: x + y, result) / len(result)
+
+            self.redis.set("info", self.info)
+
             print psutil.virtual_memory()
             print psutil.net_io_counters(pernic=True)
 
