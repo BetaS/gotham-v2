@@ -1,6 +1,7 @@
 #encoding: utf-8
 __author__ = 'BetaS'
 
+import binascii
 import zlib
 
 def int_to_hex(i):
@@ -21,6 +22,9 @@ def int_to_array(i):
 
 def array_to_str(arr):
     return ":".join(map(lambda x: "%02X" % x, arr))
+
+def array_to_int(a):
+    return long(binascii.hexlify(a), 16)
 
 def calc_crc32(data):
     crc = zlib.crc32(data) & 0xFFFFFFFF
