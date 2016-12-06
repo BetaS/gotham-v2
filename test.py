@@ -1,24 +1,32 @@
-from net.ether_sock import EthernetSocket
-import Queue
-import redis
-
-def recv(source, data):
-    print source.encode('hex'), data.encode('hex')
+import Crypto
+from Crypto.PublicKey import RSA
+from Crypto import Random
+import ast
 
 if __name__ == "__main__":
-    r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    # r.set('foo', 'bar')
-    print r.get('info')
+    random_generator = Random.new().read
+    key = RSA.generate(1024, random_generator)  # generate pub and priv key
 
-    """
-    q = Queue.Queue()
-    sock = EthernetSocket(queue=q)
-    sock.listen_start()
+    publickey = key.publickey()  # pub key export for exchange
 
-    while True:
-        try:
-            source, data = q.get_nowait()
-            recv(source, data)
-        except:
-            pass
-    """
+    encrypted = publickey.encrypt('encrypt this message', 32)
+    # message to encrypt is in the above line 'encrypt this message'
+
+    print 'encrypted message:', encrypted  # ciphertext
+    f = open('encryption.txt', 'w')
+    f.write(str(encrypted))  # write ciphertext to file
+    f.close()
+
+    # decrypted code below
+
+    f = open('encryption.txt', 'r')
+    message = f.read()
+
+    decrypted = key.decrypt(ast.literal_eval(str(encrypted)))
+
+    print 'decrypted', decrypted
+
+    f = open('encryption.txt', 'w')
+    f.write(str(message))
+    f.write(str(decrypted))
+    f.close()
