@@ -3,9 +3,10 @@
 import util.packet as packet
 import util.update_util as update_util
 from net.ether_sock import EthernetSocket
-from Queue import Queue
+from Queue import Queue, Empty
 import time
 import bson
+import sys
 
 GOTHAM_PACKAGE = "pkg/opt/package.zip"
 
@@ -15,7 +16,7 @@ class GothamAgent:
     MODE_UPDATE = 0x0020
     MODE_UPDATE_HOST = 0x0030
 
-    VERSION = 1
+    VERSION = 2
     PKT_TYPE = enumerate
 
     def __init__(self):
@@ -65,7 +66,7 @@ class GothamAgent:
                             curr_frame = payload['curr_frame']
                             update_src = payload['src']
 
-                            if self.s.hw_addr == update_src:
+                            if self.s.get_hw_addr() == update_src:
                                 max_frame = update_util.get_framesize(GOTHAM_PACKAGE)
 
                                 if curr_frame == -1:
@@ -143,8 +144,10 @@ class GothamAgent:
 
 
 
-
+            except(Empty):
+                pass
             except:
+                print "Unexpected error:", sys.exc_info()[0]
                 pass
 
     def set_mode(self, mode, status=0):

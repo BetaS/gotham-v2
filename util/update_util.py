@@ -13,7 +13,7 @@ def get_framesize(package):
     if (size % FRAME_SIZE) > 0:
         max_frame += 1
 
-    print max_frame
+    return max_frame
 
 def get_metadata(package):
     data = ""

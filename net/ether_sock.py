@@ -13,6 +13,7 @@ class EthernetSocket:
 
     def __init__(self, dev="wlan0", queue=None):
         self.alive = True
+        self.dev = dev
 
         self.ether_type = byteutil.int_to_array(EthernetSocket.ETHER_TYPE)
         self.sock = socket(PF_PACKET, SOCK_RAW, htons(EthernetSocket.ETHER_TYPE))
@@ -20,12 +21,14 @@ class EthernetSocket:
         self.sock.settimeout(1)
         self.sock.bind((dev, 0))
 
-        info = fcntl.ioctl(self.sock.fileno(), 0x8927, struct.pack('256s', dev[:15]))
-        self.hw_addr = ':'.join(['%02x' % ord(char) for char in info[18:24]])
-        self.hw_addr = byteutil.hex_to_array(self.hw_addr)
+        self.hw_addr = byteutil.hex_to_array(self.get_hw_addr())
 
         self.queue = queue
         self.receiver = threading.Thread(target=EthernetSocket.recv, args=[self])
+
+    def get_hw_addr(self):
+        info = fcntl.ioctl(self.sock.fileno(), 0x8927, struct.pack('256s', self.dev[:15]))
+        return ':'.join(['%02X' % ord(char) for char in info[18:24]])
 
     def send(self, target, payload):
         ether_frame = bytearray()

@@ -39,13 +39,13 @@ def parse_packet(p):
         return None
 
 def build_update_packet(curr_frame, max_frame, data):
-    payload = struct.pack(">I", curr_frame)
-    payload += struct.pack(">I", max_frame)
+    payload = struct.pack(">i", curr_frame)
+    payload += struct.pack(">i", max_frame)
     payload += data
-    return build_packet(TYPE_UPDATE, 1)
+    return build_packet(TYPE_UPDATE, 1, payload)
 
 def parse_update_packet(data):
-    curr_frame = struct.unpack(">I", data[0:4])[0]
-    max_frame = struct.unpack(">I", data[4:8])[0]
+    curr_frame = struct.unpack(">i", data[0:4])[0]
+    max_frame = struct.unpack(">i", data[4:8])[0]
     data = data[8:]
     return {"curr_frame": curr_frame, "max_frame": max_frame, "data": data}
