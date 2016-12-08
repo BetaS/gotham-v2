@@ -45,7 +45,6 @@ class GothamAgent:
             # Recv
             try:
                 src, data = self.q.get_nowait()
-                print src, data
                 # Check Node Exist
                 if not src in self.node:
                     self.node[src] = {}
@@ -54,15 +53,16 @@ class GothamAgent:
                 if data:
                     if data['type'] == packet.TYPE_ALIVE:
                         payload = self.parse_alive_ping(data['payload'])
+                        print src, payload
 
                         # Alive Packet Parsing
-                        ver = payload['ver']
-                        mode = payload['mode']
+                        _ver = payload['ver']
+                        _mode = payload['status']
 
-                        self.node[src]["version"] = ver
-                        self.node[src]["mode"] = mode
+                        self.node[src]["version"] = _ver
+                        self.node[src]["mode"] = _mode
 
-                        if self._check_mode(mode, GothamAgent.MODE_UPDATE):
+                        if self._check_mode(_mode, GothamAgent.MODE_UPDATE):
                             curr_frame = payload['curr_frame']
                             update_src = payload['src']
 
@@ -81,18 +81,19 @@ class GothamAgent:
                                     self.s.send(src, payload)
 
                         if self.check_mode(GothamAgent.MODE_NORMAL):
-                            if GothamAgent.VERSION < ver:
+                            if GothamAgent.VERSION < _ver:
                                 now = time.time()
-                                if self.last_known_ver < ver:
-                                    print "[!] VERSION UPDATE DETECTED (now: %d, new: %d)" % (GothamAgent.VERSION, ver)
-                                    self.last_known_ver = ver
+
+                                if self.last_known_ver < _ver:
+                                    print "[!] VERSION UPDATE DETECTED (now: %d, new: %d)" % (GothamAgent.VERSION, _ver)
+                                    self.last_known_ver = _ver
                                     self.last_known_ver_time = now
 
-                                if self.last_known_ver_time-now > 10.0:
-                                    print "[!] VERSION UPDATE START (now: %d, new: %d)" % (GothamAgent.VERSION, ver)
+                                if now-self.last_known_ver_time > 2.0:
+                                    print "[!] VERSION UPDATE START (now: %d, new: %d)" % (GothamAgent.VERSION, _ver)
                                     self.set_mode(GothamAgent.MODE_UPDATE)
                                     self.update_info = {
-                                        "target_ver": ver,
+                                        "target_ver": _ver,
                                         "curr_frame": -1,
                                         "max_frame": -1,
                                         "file_size": 0,

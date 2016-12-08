@@ -27,11 +27,11 @@ def build_packet(type, ver, payload):
 def parse_packet(p):
     data = {}
 
-    magic = struct.unpack(">I", p[0:4])
+    magic = struct.unpack(">I", p[0:4])[0]
     if magic == 0xAABCDEFF:
-        data["type"]    = struct.unpack(">h", p[4:6])
-        data["ver"]     = struct.unpack(">h", p[6:8])
-        data["length"]  = struct.unpack(">h", p[8:10])
+        data["type"]    = struct.unpack(">h", p[4:6])[0]
+        data["ver"]     = struct.unpack(">h", p[6:8])[0]
+        data["length"]  = struct.unpack(">h", p[8:10])[0]
         data["payload"] = p[10:10+data["length"]]
 
         return data
