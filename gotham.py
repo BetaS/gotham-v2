@@ -172,9 +172,8 @@ class GothamAgent:
         if self.check_mode(GothamAgent.MODE_UPDATE):
             payload['curr_frame'] = self.update_info['curr_frame']
             payload['src'] = self.update_info['src']
-            return packet.build_packet(packet.TYPE_UPDATE, 1, bson.dumps(payload))
-        else:
-            return packet.build_packet(packet.TYPE_ALIVE, 1, bson.dumps(payload))
+
+        return packet.build_packet(packet.TYPE_ALIVE, 1, bson.dumps(payload))
 
     def parse_alive_ping(self, packet):
         return bson.loads(packet)
