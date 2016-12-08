@@ -6,9 +6,21 @@ from net.ether_sock import EthernetSocket
 from Queue import Queue, Empty
 import time
 import bson
+import linecache
 import sys
 
 GOTHAM_PACKAGE = "pkg/opt/package.zip"
+
+def PrintException():
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+    print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+
+
 
 class GothamAgent:
     MODE_START  = 0x0000
@@ -16,7 +28,7 @@ class GothamAgent:
     MODE_UPDATE = 0x0020
     MODE_UPDATE_HOST = 0x0030
 
-    VERSION = 2
+    VERSION = 1
     PKT_TYPE = enumerate
 
     def __init__(self):
@@ -108,7 +120,7 @@ class GothamAgent:
                         if self.check_mode(GothamAgent.MODE_UPDATE):
                             # Only Accepts Update Source's MAC
                             if src == self.update_info['src']:
-                                payload = packet.parse_update_packet(payload)
+                                payload = packet.parse_update_packet(data['payload'])
 
                                 if payload['curr_frame'] == -1:
                                     self.update_info['curr_frame'] = 0
@@ -147,7 +159,7 @@ class GothamAgent:
             except(Empty):
                 pass
             except:
-                print "Unexpected error:", sys.exc_info()[0]
+                PrintException()
                 pass
 
     def set_mode(self, mode, status=0):
