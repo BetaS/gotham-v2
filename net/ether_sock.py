@@ -55,7 +55,8 @@ class EthernetSocket:
                         if self.queue != None:
                             self.queue.put((byteutil.array_to_str(bytearray(source)), data))
                     else:
-                        print "[!] ether_sock : CRC INVALID"
+                        print data.encode('hex')
+                        print "[!] ether_sock : CRC INVALID", crc.encode('hex'), byteutil.calc_crc32(data)
             except:
                 pass
 
