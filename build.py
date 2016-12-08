@@ -19,10 +19,6 @@ def pack(paths, dst="pkg/opt"):
     key = crypt_util.sign(z.read())
     z.close()
 
-    f = open(dst+"/package.inf", "wb")
-    f.write(key)
-    f.close()
-
 if __name__ == "__main__":
     # Zipping package
     files = ["public.key", "setup.py", "gotham.py", "util/*.py", "net/*.py"]
