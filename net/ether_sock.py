@@ -33,7 +33,7 @@ class EthernetSocket:
         ether_frame += self.hw_addr
         ether_frame += self.ether_type
         ether_frame += bytearray(payload)
-        ether_frame += byteutil.calc_crc32(payload)
+        ether_frame += byteutil.hex_to_array(byteutil.calc_crc32(payload))
 
         self.sock.send(ether_frame)
 
@@ -55,7 +55,6 @@ class EthernetSocket:
                         if self.queue != None:
                             self.queue.put((byteutil.array_to_str(bytearray(source)), data))
                     else:
-                        print data.encode('hex')
                         print "[!] ether_sock : CRC INVALID", crc.encode('hex'), byteutil.calc_crc32(data)
             except:
                 pass
