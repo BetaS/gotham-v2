@@ -35,12 +35,11 @@ class GothamAgent:
 
         while True:
             # Send
-            if self.check_mode(GothamAgent.MODE_NORMAL):
-                if time.time()-last_alive > 1:
-                    last_alive = time.time()
+            if time.time()-last_alive > 1:
+                last_alive = time.time()
 
-                    # Send Broadcast - Alive Ping
-                    self.s.broadcast(self.alive_ping())
+                # Send Broadcast - Alive Ping
+                self.s.broadcast(self.alive_ping())
 
             # Recv
             try:
