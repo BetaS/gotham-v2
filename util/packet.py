@@ -11,9 +11,6 @@ TYPE_UPDATE = 0x0002
 TYPE_INFO   = 0x0010
 
 def build_packet(type, ver, payload):
-    if len(payload) > 1024:
-        raise Exception("Payload must be <= 1024")
-
     packet = ""
 
     packet += struct.pack(">I", 0xAABCDEFF)
@@ -38,14 +35,18 @@ def parse_packet(p):
     else:
         return None
 
-def build_update_packet(curr_frame, max_frame, data):
+def build_update_packet(target, curr_frame, max_frame, data):
     payload = struct.pack(">i", curr_frame)
     payload += struct.pack(">i", max_frame)
+    payload += struct.pack(">h", len(target))
+    payload += target
     payload += data
     return build_packet(TYPE_UPDATE, 1, payload)
 
 def parse_update_packet(data):
     curr_frame = struct.unpack(">i", data[0:4])[0]
     max_frame = struct.unpack(">i", data[4:8])[0]
-    data = data[8:]
-    return {"curr_frame": curr_frame, "max_frame": max_frame, "data": data}
+    target_size = struct.unpack(">h", data[8:10])[0]
+    target = data[10:10+target_size]
+    data = data[10+target_size:]
+    return {"target": target, "curr_frame": curr_frame, "max_frame": max_frame, "data": data}
