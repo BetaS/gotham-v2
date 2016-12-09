@@ -118,8 +118,8 @@ class GothamAgent:
                         if self.check_mode(GothamAgent.MODE_NORMAL):
                             agents = payload['agents']
                             for agent in agents:
-                                now_ver = rds.get(agent)
-                                new_ver = agents[agent]
+                                now_ver = int(rds.get(agent+"_ver"))
+                                new_ver = int(agents[agent])
 
                                 if now_ver < new_ver:
                                     now = time.time()
