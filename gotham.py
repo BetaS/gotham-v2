@@ -126,7 +126,7 @@ class GothamAgent:
 
                                     if self.agent[agent]['last_known_ver'] < new_ver:
                                         print "[!] '%s' VERSION UPDATE DETECTED (now: %d, new: %d)" % (agent, now_ver, new_ver)
-                                        self.agent[agent]['last_known_ver'] = _ver
+                                        self.agent[agent]['last_known_ver'] = new_ver
                                         self.agent[agent]['last_known_ver_time'] = now
 
                                     if now-self.agent[agent]['last_known_ver_time'] > 2.0:
@@ -134,7 +134,7 @@ class GothamAgent:
                                         self.set_mode(GothamAgent.MODE_UPDATE)
                                         self.update_info = {
                                             "target": agent,
-                                            "target_ver": _ver,
+                                            "target_ver": new_ver,
                                             "curr_frame": -1,
                                             "max_frame": -1,
                                             "file_size": 0,
