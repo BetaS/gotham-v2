@@ -47,7 +47,7 @@ class GothamAgent:
         self.agent = {}
         os.chdir("pkg/src/httpd")
 
-        self.agent["httpd"] = {"pid": subprocess.Popen(["python", "httpd.py"]), "ver": 0, "last_known_ver": 0, "last_known_ver_time": time.time()}
+        self.agent["httpd"] = {"pid": subprocess.Popen(["python", "httpd.py"]), "src": "pkg/src/httpd", "ver": 0, "last_known_ver": 0, "last_known_ver_time": time.time()}
 
         os.chdir("../monitor")
         self.agent["monitor"] = {"pid": subprocess.Popen(["python", "monitor.py"]), "ver": 0, "last_known_ver": 0, "last_known_ver_time": time.time()}
@@ -98,12 +98,12 @@ class GothamAgent:
                             update_src = payload['src']
 
                             if self.s.get_hw_addr() == update_src:
-                                max_frame = update_util.get_framesize(self.agent[target]["src"]+target+".zip")
+                                max_frame = update_util.get_framesize("pkg/dist/"+target+".zip")
 
                                 if curr_frame == -1:
                                     # Sending Metadata
                                     meta = ""
-                                    f = open(self.agent[target]["src"]+target+".key", "rb")
+                                    f = open("pkg/dist/"+target+".key", "rb")
                                     meta = f.read()
                                     f.close()
 
@@ -111,7 +111,7 @@ class GothamAgent:
                                     self.s.send(src, payload)
                                 elif curr_frame < max_frame:
                                     # Sending Package Info
-                                    data = update_util.get_frame(curr_frame, GOTHAM_PACKAGE)
+                                    data = update_util.get_frame(curr_frame, "pkg/dist/"+target+".zip")
                                     payload = packet.build_update_packet(curr_frame, max_frame, data)
                                     self.s.send(src, payload)
 
@@ -182,16 +182,21 @@ class GothamAgent:
 
                                         # Process kill
                                         self.agent[target]["pid"].kill()
+                                        print "[+] Proc Killed"
 
                                         # Unzip
                                         shutil.rmtree("pkg/src/"+target)
                                         with zipfile.ZipFile("pkg/dist/"+target+".zip") as zf:
                                             zf.extractall("pkg/src/"+target+"/")
 
+                                        print "[+] Unzip Finished"
+
                                         # Process Run
                                         os.chdir("pkg/src/"+target)
                                         self.agent[target]["pid"] = subprocess.Popen(["python", target+".py"])
                                         os.chdir("../../../")
+
+                                        print "[+] Proc Run"
 
                                         # Clear
                                         self.update_info = {}
