@@ -107,12 +107,12 @@ class GothamAgent:
                                     meta = f.read()
                                     f.close()
 
-                                    payload = packet.build_update_packet(-1, max_frame, meta)
+                                    payload = packet.build_update_packet(target.encode("utf-8"), -1, max_frame, meta)
                                     self.s.send(src, payload)
                                 elif curr_frame < max_frame:
                                     # Sending Package Info
                                     data = update_util.get_frame(curr_frame, "pkg/dist/"+target+".zip")
-                                    payload = packet.build_update_packet(curr_frame, max_frame, data)
+                                    payload = packet.build_update_packet(target.encode("utf-8"), curr_frame, max_frame, data)
                                     self.s.send(src, payload)
 
                         if self.check_mode(GothamAgent.MODE_NORMAL):

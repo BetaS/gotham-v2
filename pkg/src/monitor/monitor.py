@@ -54,7 +54,7 @@ class GothamMonitor:
             # print psutil.net_io_counters(pernic=True)
 
 if __name__ == "__main__":
-    rds.set("monitor_ver", 3)
+    rds.set("monitor_ver", 1)
 
     monitor = GothamMonitor()
     monitor.start()
